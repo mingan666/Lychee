@@ -17,6 +17,7 @@ use App\Http\Requests\Photo\ClearSymLinkRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
 use App\Http\Requests\Photo\DuplicatePhotosRequest;
 use App\Http\Requests\Photo\GetPhotoRequest;
+use App\Http\Requests\Photo\GetRandomPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\SetPhotoDescriptionRequest;
 use App\Http\Requests\Photo\SetPhotoLicenseRequest;
@@ -65,9 +66,10 @@ class PhotoController extends Controller
 
 	/**
 	 * Returns a random photo (from the configured album).
-	 * Only photos with enough access rights are included.
+	 * Only photos with enough access rights are included./
 	 * This is used in the Frame Controller.
 	 *
+	 * @param GetRandomPhotoRequest $request
 	 * @param PhotoQueryPolicy $photoQueryPolicy
 	 *
 	 * @return PhotoResource
@@ -78,9 +80,13 @@ class PhotoController extends Controller
 	 *
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function getRandom(PhotoQueryPolicy $photoQueryPolicy): PhotoResource
+	public function getRandom(GetRandomPhotoRequest $request, PhotoQueryPolicy $photoQueryPolicy): PhotoResource
 	{
-		$randomAlbumId = Configs::getValueAsString('random_album_id');
+		$randomAlbumId = $request->albumID();
+		if($randomAlbumId === null)
+		{
+		 	$randomAlbumId = Configs::getValueAsString('random_album_id');
+		}
 
 		if ($randomAlbumId === '') {
 			$query = $photoQueryPolicy->applySearchabilityFilter(Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']));
