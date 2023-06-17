@@ -53,7 +53,7 @@ WORKDIR /var/www/html/Lychee
 
 COPY . .
 
-RUN  composer install --no-dev --prefer-dist && \
+RUN  composer install --prefer-dist && \
     chown -R www-data:www-data /var/www/html/Lychee && \
     echo "dev" > /var/www/html/Lychee/docker_target  && \
     rm -f /var/www/html/Lychee/.env
